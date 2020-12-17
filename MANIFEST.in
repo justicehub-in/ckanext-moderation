@@ -1,0 +1,4 @@
+include README.rst
+include LICENSE
+include requirements.txt
+recursive-include ckanext/moderation *.html *.json *.js *.less *.css *.woff *.woff2 *.ttf *.config *.bcmap *.svg *.png *.cur *.gif *.properties

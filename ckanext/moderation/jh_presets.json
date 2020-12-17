@@ -1,0 +1,55 @@
+{
+  "scheming_presets_version": 1,
+  "about": "These are the composite field presets",
+  "about_url": "http://github.com/espona/ckanext-composite",
+  "presets": [
+    {
+      "preset_name": "composite",
+      "values": {
+         "validators": "composite_group2json"
+       }
+    },
+    {
+      "preset_name": "custom_tag",
+      "values": {
+        "validators": "tag_string_convert"
+      }
+    },
+    {
+      "preset_name": "composite_repeating",
+      "values": {
+         "validators": "composite_repeating_group2json"
+       }
+    },
+    {
+      "preset_name": "multiple_checkbox_with_other",
+      "values": {
+        "validators": "scheming_multiple_choice_with_other"
+      }
+    },
+    {
+      "preset_name": "month",
+      "values": {
+        "form_snippet": "month.html",
+        "display_snippet": "month.html"
+      }
+    },
+    {
+      "preset_name": "metadata_autocomplete",
+      "values": {
+        "validators": "ignore_missing clean_format unicode",
+        "form_snippet": "metadata_autocomplete.html",
+        "form_attrs": {
+          "data-module": "autocomplete-action-api"
+        }
+      }
+    },
+    {
+      "preset_name": "year",
+      "values": {
+        "form_snippet": "year.html",
+        "display_snippet": "year.html"
+      }
+    }
+  ]
+}

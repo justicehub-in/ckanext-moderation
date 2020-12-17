@@ -21,6 +21,80 @@ flatten_to_string_key = logic.flatten_to_string_key
 ValidationError = logic.ValidationError
 
 
+def read(package_type, id):
+    context = {
+        u'model': model,
+        u'session': model.Session,
+        u'user': g.user,
+        u'for_view': True,
+        u'auth_user_obj': g.userobj
+    }
+    data_dict = {u'id': id, u'include_tracking': True}
+    activity_id = request.params.get(u'activity_id')
+
+    # check if package exists
+    try:
+        pkg_dict = get_action(u'package_show')(context, data_dict)
+        pkg = context[u'package']
+    except (NotFound, NotAuthorized):
+        return jsonify(
+            {'success': False,
+             'message': 'Dataset: {id} not found'.format(id=id)}), 404
+
+    g.pkg_dict = pkg_dict
+    g.pkg = pkg
+    # NB templates should not use g.pkg, because it takes no account of
+    # activity_id
+
+    if activity_id:
+        # view an 'old' version of the package, as recorded in the
+        # activity stream
+        try:
+            activity = get_action(u'activity_show')(
+                context, {u'id': activity_id, u'include_data': True})
+        except NotFound:
+            return jsonify(
+                {'success': False,
+                 'message': 'Activity not found'}), 404
+        except NotAuthorized:
+            return jsonify(
+                {'success': False,
+                 'message': 'Not Authorized'}), 403
+        current_pkg = pkg_dict
+        try:
+            pkg_dict = activity[u'data'][u'package']
+        except KeyError:
+            return jsonify(
+                {'success': False,
+                 'message': 'Dataset: {id} not found'.format(id=id)}), 404
+        if u'id' not in pkg_dict or u'resources' not in pkg_dict:
+            return jsonify(
+                {'success': False,
+                 'message': 'Detail for given dataset activity not found'}), 404
+        if pkg_dict[u'id'] != current_pkg[u'id']:
+
+            # the activity is not for the package in the URL - don't allow
+            # misleading URLs as could be malicious
+            return jsonify(
+                {'success': False,
+                 'message': 'Activity not found'}), 404
+        # The name is used lots in the template for links, so fix it to be
+        # the current one. It's not displayed to the user anyway.
+        pkg_dict[u'name'] = current_pkg[u'name']
+
+        # Earlier versions of CKAN only stored the package table in the
+        # activity, so add a placeholder for resources, or the template
+        # will crash.
+        pkg_dict.setdefault(u'resources', [])
+
+    composite_repeating = ['links', 'publisher_contacts', 'region']
+    for key in composite_repeating:
+        if pkg_dict[key]:
+            pkg_dict[key] = json.loads(pkg_dict[key])
+    pkg_dict['source'] = pkg_dict['source'].split(",")
+    return jsonify(pkg_dict), 200
+
+
 class CreateAPIView(MethodView):
 
     def _prepare(self, data=None):
@@ -47,6 +121,9 @@ class CreateAPIView(MethodView):
             data_dict = clean_dict(
                 dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
             )
+            # TODO: Check special character regex
+            data_dict['name'] = data_dict['title'].lower().replace("  ", " ").replace(" ", "-")
+            # TODO: Do give id in return
         except dict_fns.DataError:
             return jsonify({'success': False, 'error': {'message': _(u'Integrity Error')}}), 400
         try:
@@ -66,10 +143,15 @@ class CreateAPIView(MethodView):
                     context, data_dict
                 )
 
-                return json.dumps(
+                return jsonify(
                     {'success': True,
-                     'message': 'Dataset: {id} is successfully updated'.format(id=pkg_dict[u'name'])}), 200
-            data_dict[u'state'] = u'draft'
+                     'message': 'Dataset successfully updated',
+                     'pkg_name': pkg_dict[u'name']}), 200
+            # TODO: Should check by basestring
+            if u'dataset_state' in data_dict and data_dict[u'dataset_state'] == 'active':
+                data_dict[u'state'] = u'active'
+            else:
+                data_dict[u'state'] = u'draft'
             context[u'allow_state_change'] = True
 
             data_dict[u'type'] = package_type
@@ -77,7 +159,8 @@ class CreateAPIView(MethodView):
             pkg_dict = get_action(u'package_create')(context, data_dict)
 
             return jsonify({'success': True,
-                            'message': 'Dataset: {id} is successfully created'.format(id=pkg_dict[u'name'])}), 201
+                            'message': 'Dataset successfully created',
+                            'pkg_name': pkg_dict[u'name']}), 201
         except NotAuthorized:
             return jsonify({'success': False,
                             'error': {'message': 'Not Authorized'}}), 401
@@ -94,4 +177,5 @@ class CreateAPIView(MethodView):
                             }), 500
         except ValidationError as e:
             return jsonify({'success': False,
-                            'error': {'message': 'Validation Error'}}), 400
+                            'error': {'message': 'Validation Error',
+                                      'fields': e.error_dict}}), 400

@@ -1,13 +1,22 @@
 from ckanext.moderation import blueprint
 import ckan.plugins as plugins
-import ckan.plugins.toolkit as toolkit
+import ckan.plugins.toolkit as tk
+import ckanext.moderation.logic.validators as validators
 
 
 class ModerationPlugin(plugins.SingletonPlugin):
+    plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IBlueprint)
+    plugins.implements(plugins.IValidators)
+
+    def get_validators(self):
+        return {
+            u'starts_with_b': validators.starts_with_b,
+            u'scheming_multiple_choice_with_other': validators.scheming_multiple_choice_with_other
+        }
 
     def update_config(self, config):
-        toolkit.add_template_directory(config, 'templates')
+        tk.add_template_directory(config, 'templates')
 
     def get_helpers(self):
         return {}

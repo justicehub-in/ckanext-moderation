@@ -1,0 +1,138 @@
+{
+  "scheming_version": 1,
+  "dataset_type": "dataset",
+  "about": "A reimplementation of the default CKAN dataset schema",
+  "about_url": "http://github.com/ckan/ckanext-scheming",
+  "dataset_fields": [
+    {
+      "field_name": "tag_string",
+      "label": "Tags",
+      "preset": "tag_string_autocomplete",
+      "form_placeholder": "eg. economy, mental health, government",
+      "description": "Tags to identify the dataset."
+    },
+    {
+      "field_name": "license_id",
+      "label": "License",
+      "help_text": "License definitions and additional information can be found at http://opendefinition.org/",
+      "description": "What licences will this data adhere to ?"
+    },
+    {
+      "field_name": "private",
+      "label": "Set Viewing Permissions",
+      "help_text": "Who can view this dataset",
+      "description": "Why public or private"
+    },
+    {
+      "field_name": "publisher_type",
+      "label": "Who is the Primary Publisher or Author of the file(s)?",
+      "preset": "select",
+      "form_snippet": "radio.html",
+      "choices":[
+        {
+          "value": "individual",
+          "label": "An Individual, I know the name"
+        },
+        {
+          "value": "organization",
+          "label": "An Organization"
+        }
+      ],
+      "description": "Some random description for publisher_type"
+    },
+    {
+      "field_name": "publisher_contacts",
+      "label": "Names of Publishers",
+      "preset": "composite_repeating",
+      "form_blanks": 2,
+      "subfields": [
+        {
+          "field_name": "name",
+          "label": "Publisher Name"
+        },
+        {
+          "field_name": "email",
+          "label": "Email of Publisher"
+        }
+      ],
+      "description": "Random name for publishers"
+    },
+    {
+      "field_name": "region",
+      "label": "Which region does this data cover",
+      "preset":"multiple_checkbox_with_other",
+      "form_attrs": {
+        "data-module-source": "/api/3/action/metadata_autocomplete?field=states&islist=True&incomplete=?"
+      },
+      "choices": [
+        {
+          "value": "india",
+          "label": "All India"
+        }
+      ],
+      "description": "How was the data sourced ?"
+    },
+    {
+      "field_name": "start_year",
+      "label": "Data spans from (year)",
+      "form_placeholder": "e.g. 2010",
+      "preset": "year",
+      "description": "From which year the data is collected."
+    },
+    {
+      "field_name": "start_month",
+      "label": "Data spans from (month)",
+      "form_placeholder": "e.g. 1-12",
+      "preset": "month",
+      "description": "From which month the data is collected."
+    },
+    {
+      "field_name": "end_year",
+      "label": "Data spans till (year)",
+      "form_placeholder": "e.g. 2020",
+      "preset": "year",
+      "description": "Till which year the data is collected."
+    },
+    {
+      "field_name": "end_month",
+      "label": "Data spans till (month)",
+      "form_placeholder": "e.g. 1-12",
+      "preset": "month",
+      "description": "Till which month the data is collected."
+    },
+    {
+      "field_name": "language",
+      "label": "Language",
+      "form_placeholder": "e.g. en, hi",
+      "display_snippet": "language.html",
+      "preset": "metadata_autocomplete",
+      "form_attrs": {
+          "data-module-source": "/api/3/action/metadata_autocomplete?field=language&incomplete=?"
+      },
+      "description": "Languages, the data is stored/available in ?"
+    },
+    {
+      "field_name": "source",
+      "label": "Select the sources you got these data from",
+      "form_placeholder": "eg. economy, mental health, government",
+      "description": "Tags to identify the source of dataset."
+    },
+    {
+      "field_name": "links",
+      "label": "Reference Links",
+      "preset": "composite_repeating",
+      "form_blanks": 2,
+      "subfields": [
+          {
+              "field_name": "link",
+              "label": "Paste Link"
+          },
+          {
+              "field_name": "title",
+              "label": "Give your link a title"
+          }
+      ],
+      "description": "URL. Links to studies/articles/blogs where the dataset was used."
+    }
+  ]
+}
