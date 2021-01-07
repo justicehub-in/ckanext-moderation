@@ -90,15 +90,20 @@ def read(package_type, id):
     composite_repeating = ['links', 'publisher_contacts', 'region']
     for key in composite_repeating:
         if pkg_dict[key]:
-            pkg_dict[key] = json.loads(pkg_dict[key])
+            try:
+                pkg_dict[key] = json.loads(pkg_dict[key])
+            except:
+                print('Not able to load')
     pkg_dict['source'] = pkg_dict['source'].split(",")
     return jsonify(pkg_dict), 200
 
 
 class CreateAPIView(MethodView):
 
-    def _prepare(self, data=None):
-
+    def post(self, package_type):
+        # The staged add dataset used the new functionality when the dataset is
+        # partially created so we need to know if we actually are updating or
+        # this is a real new.
         context = {
             u'model': model,
             u'session': model.Session,
@@ -110,13 +115,6 @@ class CreateAPIView(MethodView):
             check_access(u'package_create', context)
         except NotAuthorized:
             return jsonify({'success': False, 'error': {'message': 'Not Authorized'}}), 401
-        return context
-
-    def post(self, package_type):
-        # The staged add dataset used the new functionality when the dataset is
-        # partially created so we need to know if we actually are updating or
-        # this is a real new.
-        context = self._prepare()
         try:
             data_dict = clean_dict(
                 dict_fns.unflatten(tuplize_dict(parse_params(request.form)))

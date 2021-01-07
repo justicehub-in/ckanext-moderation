@@ -63,6 +63,6 @@ class CreateAPIView(MethodView):
         data_dict = get_action(u'package_show')(context, {u'id': id})
         get_action(u'package_update')(
             dict(context, allow_state_change=True),
-            dict(data_dict, state=u'active')
+            dict(data_dict)
         )
         return jsonify({'success': 'Resource has been created successfully'}), 201
