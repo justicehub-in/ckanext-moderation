@@ -81,6 +81,12 @@ setup(
     entry_points='''
         [ckan.plugins]
         moderation=ckanext.moderation.plugin:ModerationPlugin
+        
+        [paste.paster_command]
+        moderation_table = ckanext.moderation.command:ModerationCommand
+
+        [ckan.click_command]
+        moderation_table = ckanext.emailauth.cli:moderation_table
     ''',
 
     # If you are changing from the default layout of your extension, you may
