@@ -7,6 +7,7 @@ import ckan.model as model
 from ckan.model.domain_object import DomainObject
 from ckan.model import meta, extension
 import ckan.model.types as _types
+import datetime
 
 from sqlalchemy.schema import Table, Column, ForeignKey, Index
 
@@ -29,10 +30,10 @@ class ModerationModel(DomainObject):
     Moderation Model information
     """
 
-    def __init__(self, user_id, key, value):
-        self.user_id = user_id
-        self.key = key
-        self.value = value
+    def __init__(self, package_id, status, moderator_id=None ):
+        self.package_id = package_id
+        self.status = status
+        self.moderator_id = moderator_id
 
     @staticmethod
     def get(user_id, key):
@@ -67,7 +68,7 @@ class ModerationModel(DomainObject):
 
     @staticmethod
     def check_exists():
-        return user_extra_table.exists()
+        return moderation_table.exists()
 
     def as_dict(self):
         d = {k: v for k, v in vars(self).items() if not k.startswith('_')}
@@ -75,14 +76,19 @@ class ModerationModel(DomainObject):
 
 
 def define_moderation_table():
+    """
+    id | package_id | status | moderator_id | created_at | updated_at
+    """
     global moderation_table
     moderation_table = Table('moderation', meta.metadata,
                              Column('id', types.UnicodeText, primary_key=True, default=_types.make_uuid),
-                             Column('user_id', types.UnicodeText, ForeignKey('user.id')),
-                             Column('key', types.UnicodeText),
-                             Column('value', types.UnicodeText),
+                             Column('package_id', types.UnicodeText, ForeignKey('package.id')),
+                             Column('status', types.UnicodeText),
+                             Column('moderator_id', types.UnicodeText, ForeignKey('user.id'), nullable=True),
+                             Column('created_at', types.DateTime, default=datetime.datetime.utcnow),
+                             Column('updated_at', types.DateTime, default=datetime.datetime.utcnow)
                              )
-    Index('user_id_key_idx', moderation_table.c.user_id, moderation_table.c.key, unique=True)
+    # TODO: Possibility of adding index
     mapper(ModerationModel, moderation_table, extension=[extension.PluginMapperExtension(), ])
 
 
@@ -92,16 +98,18 @@ def define_moderation_table():
 
 def create_table():
     """
-    Create user_extra table
+    Create moderation table
     """
-    if model.user_table.exists() and not moderation_table.exists():
+    if not moderation_table.exists():
         moderation_table.create()
         log.debug('Moderation table created')
+    else:
+        print('Moderation table already exist')
 
 
 def delete_table():
     """
-    Delete information from user_extra table
+    Delete information from moderation table
     """
     print('Moderation trying to delete table...')
     if moderation_table.exists():
@@ -112,7 +120,7 @@ def delete_table():
 
 def drop_table():
     """
-    Drop user_extra table
+    Drop moderation table
     """
     print ('Moderation trying to drop table...')
     if moderation_table.exists():

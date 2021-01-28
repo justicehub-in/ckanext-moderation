@@ -98,6 +98,31 @@ def read(package_type, id):
     return jsonify(pkg_dict), 200
 
 
+class StatusAPIView(MethodView):
+
+    def post(self, package_type):
+        allowed_var = ['active', 'draft', 'pending']
+        context = {
+            u'model': model,
+            u'session': model.Session,
+            u'user': g.user,
+            u'auth_user_obj': g.userobj,
+            u'save': True
+        }
+        data_dict = request.get_json()
+        if g.userobj.sysadmin and data_dict['name'] in allowed_var:
+            # TODO: Pylons object get JSON
+            try:
+                pkg_dict = get_action(u'package_update')(
+                    context, {'name': data_dict['name'], 'state': data_dict['state']}
+                )
+                return jsonify({'status': 'Successfully Updated'}), 200
+            except:
+                return jsonify({'status': 'Not found'}), 200
+        else:
+            return jsonify({'status': 'Not Authorized'}), 400
+
+
 class CreateAPIView(MethodView):
 
     def post(self, package_type):
@@ -147,7 +172,9 @@ class CreateAPIView(MethodView):
                      'pkg_name': pkg_dict[u'name']}), 200
             # TODO: Should check by basestring
             if u'dataset_state' in data_dict and data_dict[u'dataset_state'] == 'active':
-                data_dict[u'state'] = u'active'
+                data_dict[u'state'] = u'pending'
+                if g.userobj.sysadmin:
+                    data_dict[u'state'] = u'active'
             else:
                 data_dict[u'state'] = u'draft'
             context[u'allow_state_change'] = True
@@ -155,6 +182,13 @@ class CreateAPIView(MethodView):
             data_dict[u'type'] = package_type
             context[u'message'] = data_dict.get(u'log_message', u'')
             pkg_dict = get_action(u'package_create')(context, data_dict)
+
+            mod_status = "SUBMITTED"
+            if g.userobj.sysadmin:
+                mod_status = "APPROVED"
+
+            moderation = get_action('moderation_create')(context, {'package_id': pkg_dict[u'id'], 'status': mod_status})
+
 
             return jsonify({'success': True,
                             'message': 'Dataset successfully created',
