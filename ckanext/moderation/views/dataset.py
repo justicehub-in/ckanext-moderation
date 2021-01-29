@@ -172,7 +172,7 @@ class CreateAPIView(MethodView):
                      'pkg_name': pkg_dict[u'name']}), 200
             # TODO: Should check by basestring
             if u'dataset_state' in data_dict and data_dict[u'dataset_state'] == 'active':
-                data_dict[u'state'] = u'under-review'
+                data_dict[u'state'] = u'pending-review'
                 if g.userobj.sysadmin:
                     data_dict[u'state'] = u'active'
             else:
