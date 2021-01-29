@@ -29,7 +29,8 @@ class CreateAPIView(MethodView):
 
         data = {
             'upload': files['upload'],
-            'name': request.form.get('name')
+            'name': request.form.get('name'),
+            'description': request.form.get('description')
         }
         resource_id = request.form.get("id")
 
