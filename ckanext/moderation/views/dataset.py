@@ -101,7 +101,7 @@ def read(package_type, id):
 class StatusAPIView(MethodView):
 
     def post(self, package_type):
-        allowed_var = ['under-review', 'resubmission-required', 'rejected', 'active']
+        allowed_var = ['under-review', 'resubmission-required', 'rejected', 'active', 'pending-review']
         context = {
             u'model': model,
             u'session': model.Session,
