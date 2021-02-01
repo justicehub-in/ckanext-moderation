@@ -110,7 +110,7 @@ class StatusAPIView(MethodView):
             u'save': True
         }
         data_dict = request.get_json()
-        if g.userobj.sysadmin and data_dict['name'] in allowed_var:
+        if g.userobj.sysadmin and data_dict['state'] in allowed_var:
             # TODO: Pylons object get JSON
             try:
                 pkg_dict = get_action(u'package_update')(
