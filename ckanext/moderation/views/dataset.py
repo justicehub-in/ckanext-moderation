@@ -107,7 +107,8 @@ class StatusAPIView(MethodView):
             u'session': model.Session,
             u'user': g.user,
             u'auth_user_obj': g.userobj,
-            u'save': True
+            u'save': True,
+            u'allow_partial_update': True
         }
         data_dict = request.get_json()
         if g.userobj.sysadmin and data_dict['state'] in allowed_var:
