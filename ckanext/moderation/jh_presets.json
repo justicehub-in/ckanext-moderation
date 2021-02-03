@@ -29,10 +29,11 @@
     },
     {
       "preset_name": "month",
-      "values": {
-        "form_snippet": "month.html",
-        "display_snippet": "month.html"
-      }
+      "values": {}
+    },
+    {
+      "preset_name": "day",
+      "values": {}
     },
     {
       "preset_name": "metadata_autocomplete",
@@ -46,10 +47,7 @@
     },
     {
       "preset_name": "year",
-      "values": {
-        "form_snippet": "year.html",
-        "display_snippet": "year.html"
-      }
+      "values": {}
     }
   ]
 }

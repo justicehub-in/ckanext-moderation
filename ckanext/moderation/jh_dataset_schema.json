@@ -27,7 +27,6 @@
       "field_name": "publisher_type",
       "label": "Who is the Primary Publisher or Author of the file(s)?",
       "preset": "select",
-      "form_snippet": "radio.html",
       "choices":[
         {
           "value": "individual",
@@ -87,6 +86,13 @@
       "description": "From which month the data is collected."
     },
     {
+      "field_name": "start_day",
+      "label": "Data spans from (day)",
+      "form_placeholder": "e.g. 1-31",
+      "preset": "day",
+      "description": "From which day the data is collected."
+    },
+    {
       "field_name": "end_year",
       "label": "Data spans till (year)",
       "form_placeholder": "e.g. 2020",
@@ -101,10 +107,16 @@
       "description": "Till which month the data is collected."
     },
     {
+      "field_name": "end_day",
+      "label": "Data spans from (day)",
+      "form_placeholder": "e.g. 1-31",
+      "preset": "day",
+      "description": "From which date the data is collected."
+    },
+    {
       "field_name": "language",
       "label": "Language",
       "form_placeholder": "e.g. en, hi",
-      "display_snippet": "language.html",
       "preset": "metadata_autocomplete",
       "form_attrs": {
           "data-module-source": "/api/3/action/metadata_autocomplete?field=language&incomplete=?"
