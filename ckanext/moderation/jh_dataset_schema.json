@@ -72,6 +72,13 @@
       "description": "How was the data sourced ?"
     },
     {
+      "field_name": "publication_date",
+      "label": "Data spans from",
+      "form_placeholder": "",
+      "preset": "date_string",
+      "description": "From which date the data is published"
+    },
+    {
       "field_name": "start_year",
       "label": "Data spans from (year)",
       "form_placeholder": "e.g. 2010",
@@ -86,13 +93,6 @@
       "description": "From which month the data is collected."
     },
     {
-      "field_name": "start_day",
-      "label": "Data spans from (day)",
-      "form_placeholder": "e.g. 1-31",
-      "preset": "day",
-      "description": "From which day the data is collected."
-    },
-    {
       "field_name": "end_year",
       "label": "Data spans till (year)",
       "form_placeholder": "e.g. 2020",
@@ -105,13 +105,6 @@
       "form_placeholder": "e.g. 1-12",
       "preset": "month",
       "description": "Till which month the data is collected."
-    },
-    {
-      "field_name": "end_day",
-      "label": "Data spans from (day)",
-      "form_placeholder": "e.g. 1-31",
-      "preset": "day",
-      "description": "From which date the data is collected."
     },
     {
       "field_name": "language",

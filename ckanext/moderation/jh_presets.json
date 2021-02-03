@@ -32,7 +32,7 @@
       "values": {}
     },
     {
-      "preset_name": "day",
+      "preset_name": "year",
       "values": {}
     },
     {
@@ -46,7 +46,7 @@
       }
     },
     {
-      "preset_name": "year",
+      "preset_name": "date_string",
       "values": {}
     }
   ]
