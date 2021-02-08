@@ -8,6 +8,7 @@ import ckan.logic as logic
 from ckanext.moderation.lib.utils import tag_string_to_list
 from ckan.lib.search import SearchIndexError
 from six import text_type
+from slugify import slugify
 
 
 NotFound = logic.NotFound
@@ -145,9 +146,7 @@ class CreateAPIView(MethodView):
             data_dict = clean_dict(
                 dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
             )
-            # TODO: Check special character regex
-            data_dict['name'] = data_dict['title'].lower().replace("  ", " ").replace(" ", "-")
-            # TODO: Do give id in return
+            data_dict['name'] = slugify(data_dict['title'], to_lower=True, seperator='-')
         except dict_fns.DataError:
             return jsonify({'success': False, 'error': {'message': _(u'Integrity Error')}}), 400
         try:
