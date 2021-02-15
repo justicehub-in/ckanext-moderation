@@ -9,6 +9,8 @@ from ckanext.moderation.lib.utils import tag_string_to_list
 from ckan.lib.search import SearchIndexError
 from six import text_type
 from slugify import slugify
+from ckan.lib.plugins import plugins
+import ckan.lib.helpers as h
 
 
 NotFound = logic.NotFound
@@ -90,12 +92,12 @@ def read(package_type, id):
 
     composite_repeating = ['links', 'publisher_contacts', 'region']
     for key in composite_repeating:
-        if pkg_dict[key]:
+        if key in pkg_dict:
             try:
                 pkg_dict[key] = json.loads(pkg_dict[key])
             except:
                 print('Not able to load')
-    pkg_dict['source'] = pkg_dict['source'].split(",")
+    pkg_dict['source'] = pkg_dict.get('source', '').split(",")
     return jsonify(pkg_dict), 200
 
 
@@ -123,6 +125,16 @@ class StatusAPIView(MethodView):
                 return jsonify({'status': 'Not found'}), 200
         else:
             return jsonify({'status': 'Not Authorized'}), 400
+
+
+class DatasetUpdateAPIView(MethodView):
+
+    def get(self, id, package_type):
+        if g.user:
+            return plugins.toolkit.render('dataupload/index.html')
+        else:
+            #TODO: change hardcoded value "/upload" to directly pick from requester url
+            h.redirect_to('/login')
 
 
 class CreateAPIView(MethodView):
