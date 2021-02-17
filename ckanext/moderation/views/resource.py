@@ -3,6 +3,7 @@ from flask import request, jsonify
 import ckan.model as model
 from ckan.common import _, g, request
 import ckan.logic as logic
+import ckan.lib.navl.dictization_functions as dict_fns
 
 
 NotFound = logic.NotFound
@@ -14,6 +15,73 @@ clean_dict = logic.clean_dict
 parse_params = logic.parse_params
 flatten_to_string_key = logic.flatten_to_string_key
 ValidationError = logic.ValidationError
+
+
+class EditView(MethodView):
+
+    def post(self, package_type, id, resource_id):
+        context = {
+            u'model': model,
+            u'session': model.Session,
+            u'api_version': 3,
+            u'for_edit': True,
+            u'user': g.user,
+            u'auth_user_obj': g.userobj
+        }
+        try:
+            check_access(u'package_update', context, {u'id': id})
+        except NotAuthorized:
+            return jsonify({'success': False, 'error': {'message': 'Not Authorized to perform this action'}}), 401
+        data = clean_dict(
+            dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
+        )
+        data.update(clean_dict(
+            dict_fns.unflatten(tuplize_dict(parse_params(request.files)))
+        ))
+
+        # we don't want to include save as it is part of the form
+        if 'save' in data:
+            del data[u'save']
+
+        data[u'package_id'] = id
+        try:
+            if resource_id:
+                data[u'id'] = resource_id
+                get_action(u'resource_update')(context, data)
+            else:
+                get_action(u'resource_create')(context, data)
+        except ValidationError as e:
+            error_summary = e.error_summary
+            return jsonify({'success': False, 'error': {'message': error_summary}}), 400
+        except NotAuthorized:
+            return jsonify({'success': False, 'error': {'message': 'Not Authorized to perform this action'}}), 401
+
+        return jsonify({'success': 'Resource has been updated successfully'}), 201
+
+
+class DeleteView(MethodView):
+
+    def post(self, package_type, id, resource_id):
+
+        context = {
+            u'model': model,
+            u'session': model.Session,
+            u'user': g.user,
+            u'auth_user_obj': g.userobj
+        }
+
+        try:
+            check_access(u'package_delete', context, {u'id': id})
+        except NotAuthorized:
+            return jsonify({'success': False, 'error': {'message': 'Not Authorized to perform this action'}}), 401
+
+        try:
+            get_action(u'resource_delete')(context, {u'id': resource_id})
+            return jsonify({'success': True, 'error': {'message': 'Resource deleted successfully'}}), 200
+        except NotAuthorized:
+            return jsonify({'success': False, 'error': {'message': 'Not Authorized to perform this action'}}), 401
+        except NotFound:
+            return jsonify({'success': False, 'error': {'message': 'Resource not found'}}), 404
 
 
 class CreateAPIView(MethodView):
