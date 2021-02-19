@@ -171,6 +171,14 @@ class CreateAPIView(MethodView):
                 # This is actually an update not a save
                 data_dict[u'id'] = data_dict[u'pkg_name']
                 del data_dict[u'pkg_name']
+
+                if u'dataset_state' in data_dict and data_dict[u'dataset_state'] == 'active':
+                    data_dict[u'state'] = 'active'
+                    # data_dict[u'state'] = u'pending-review'
+                    # if g.userobj.sysadmin:
+                    #     data_dict[u'state'] = u'active'
+                else:
+                    data_dict[u'state'] = u'draft'
                 # this is actually an edit not a save
                 pkg_dict = get_action(u'package_update')(
                     context, data_dict
@@ -182,9 +190,10 @@ class CreateAPIView(MethodView):
                      'pkg_name': pkg_dict[u'name']}), 200
             # TODO: Should check by basestring
             if u'dataset_state' in data_dict and data_dict[u'dataset_state'] == 'active':
-                data_dict[u'state'] = u'pending-review'
-                if g.userobj.sysadmin:
-                    data_dict[u'state'] = u'active'
+                data_dict[u'state'] = 'active'
+                # data_dict[u'state'] = u'pending-review'
+                # if g.userobj.sysadmin:
+                #     data_dict[u'state'] = u'active'
             else:
                 data_dict[u'state'] = u'draft'
             context[u'allow_state_change'] = True
