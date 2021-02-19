@@ -171,8 +171,6 @@ class CreateAPIView(MethodView):
                 # This is actually an update not a save
                 data_dict[u'id'] = data_dict[u'pkg_name']
                 del data_dict[u'pkg_name']
-                # don't change the dataset state
-                data_dict[u'state'] = u'draft'
                 # this is actually an edit not a save
                 pkg_dict = get_action(u'package_update')(
                     context, data_dict
