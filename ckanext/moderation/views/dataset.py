@@ -185,6 +185,10 @@ class CreateAPIView(MethodView):
                     context, data_dict
                 )
 
+                mail_recipient('JusticeHub Team', 'info@justicehub.in', 'JH | Dataset updated',
+                               'Dataset updated with name: http://justicehub.in/dataset/{0}\nUser: {1}'
+                               .format(pkg_dict[u'name'], g.user))
+
                 return jsonify(
                     {'success': True,
                      'message': 'Dataset successfully updated',
