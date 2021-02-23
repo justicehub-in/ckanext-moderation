@@ -11,6 +11,7 @@ from six import text_type
 from slugify import slugify
 from ckan.lib.plugins import plugins
 import ckan.lib.helpers as h
+from ckan.lib.mailer import mail_recipient
 
 
 NotFound = logic.NotFound
@@ -207,7 +208,9 @@ class CreateAPIView(MethodView):
                 mod_status = "APPROVED"
 
             moderation = get_action('moderation_create')(context, {'package_id': pkg_dict[u'id'], 'status': mod_status})
-
+            mail_recipient('JusticeHub Team', 'info@justicehub.in', 'JH | New dataset created',
+                           'New dataset created with name: http://justicehub.in/dataset/{0}\nUser: {1}'
+                           .format(pkg_dict[u'name'], g.user))
 
             return jsonify({'success': True,
                             'message': 'Dataset successfully created',
