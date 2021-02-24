@@ -52,6 +52,10 @@
         {
           "field_name": "email",
           "label": "Email of Publisher"
+        },
+        {
+          "field_name": "website",
+          "label": "Publisher Website"
         }
       ],
       "description": "Random name for publishers"
