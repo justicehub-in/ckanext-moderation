@@ -159,7 +159,7 @@ class CreateAPIView(MethodView):
             data_dict = clean_dict(
                 dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
             )
-            data_dict['name'] = slugify(data_dict['title'], to_lower=True, seperator='-')
+            data_dict['name'] = slugify(data_dict['title'], to_lower=True, seperator='-')[0:100]
         except dict_fns.DataError:
             return jsonify({'success': False, 'error': {'message': _(u'Integrity Error')}}), 400
         try:
