@@ -154,7 +154,7 @@ class CreateAPIView(MethodView):
         try:
             check_access(u'package_create', context)
         except NotAuthorized:
-            return jsonify({'success': False, 'error': {'message': 'Not Authorized'}}), 401
+            return jsonify({'success': False, 'error': {'message': 'Not Authorized'}}), 403
         try:
             data_dict = clean_dict(
                 dict_fns.unflatten(tuplize_dict(parse_params(request.form)))
@@ -181,9 +181,12 @@ class CreateAPIView(MethodView):
                 else:
                     data_dict[u'state'] = u'draft'
                 # this is actually an edit not a save
-                pkg_dict = get_action(u'package_update')(
-                    context, data_dict
-                )
+                try:
+                    pkg_dict = get_action(u'package_update')(
+                        context, data_dict
+                    )
+                except NotAuthorized:
+                    return jsonify({'success': False, 'error': {'message': 'Not Authorized to update package'}}), 403
 
                 mail_recipient('JusticeHub Team', 'info@justicehub.in', 'JH | Dataset updated',
                                'Dataset updated with name: http://justicehub.in/dataset/{0}\nUser: {1}'

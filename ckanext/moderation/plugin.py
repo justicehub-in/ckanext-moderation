@@ -3,6 +3,7 @@ import ckan.plugins as plugins
 import ckan.plugins.toolkit as tk
 import ckanext.moderation.logic.validators as validators
 import ckanext.moderation.moderation_model as moderation_model
+from ckanext.moderation.auth import update
 
 import ckanext.moderation.actions.create as create
 
@@ -12,6 +13,7 @@ class ModerationPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IActions)
     plugins.implements(plugins.IBlueprint)
     plugins.implements(plugins.IValidators)
+    plugins.implements(plugins.IAuthFunctions)
 
     def get_validators(self):
         return {
@@ -31,6 +33,11 @@ class ModerationPlugin(plugins.SingletonPlugin):
     def get_actions(self):
         return {
             'moderation_create': create.moderation_create
+        }
+
+    def get_auth_functions(self):
+        return {
+            'package_update': update.package_update
         }
 
     def configure(self, config):
